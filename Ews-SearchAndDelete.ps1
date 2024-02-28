@@ -1,5 +1,5 @@
 #
-# Search-EwsMailboxforAmex.ps1
+# Ews-SearchAndDelete.ps1
 #
 # By David Barrett and Jim Martin, Microsoft Ltd. 2013-2023. Use at your own risk.  No warranties are given.
 #
@@ -34,7 +34,7 @@ param (
 #>** EWS/OAUTH PARAMETERS START **#
     [Parameter(Mandatory=$False,HelpMessage="Credentials used to authenticate with EWS.")][alias("Credential")] [System.Management.Automation.PSCredential]$Credentials,
 	[Parameter(Mandatory=$False,HelpMessage="If set, then we will use OAuth to access the mailbox (required for Office 365)")] [switch]$OAuth,
-    [Parameter(Mandatory=$False,HelpMessage="The client Id that this script will identify as.  Must be registered in Azure AD.")] [string]$OAuthClientId = "8799ab60-ace5-4bda-b31f-621c9f6668db",
+    [Parameter(Mandatory=$False,HelpMessage="The client Id that this script will identify as.  Must be registered in Azure AD.")] [string]$OAuthClientId = "",
     [Parameter(Mandatory=$False,HelpMessage="The tenant Id (application must be registered in the same tenant being accessed).")] [string]$OAuthTenantId = "",
     [Parameter(Mandatory=$False,HelpMessage="The redirect Uri of the Azure registered application.")] [string]$OAuthRedirectUri = "http://localhost/code",
     [Parameter(Mandatory=$False,HelpMessage="If using application permissions, specify the secret key OR certificate.")] [string]$OAuthSecretKey = "",
