@@ -783,7 +783,7 @@ function CreateService($smtpAddress, $impersonatedAddress = "")
     # We enable tracing so that we can retrieve the last response (and read any throttling information from it - this isn't exposed in the EWS Managed API)
     if (![String]::IsNullOrEmpty($EWSManagedApiPath))
     {
-        #CreateTraceListener $exchangeService
+        CreateTraceListener $exchangeService
         if ($script:Tracer)
         {
             $exchangeService.TraceListener = $script:Tracer
