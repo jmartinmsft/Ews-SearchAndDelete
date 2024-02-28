@@ -1566,7 +1566,10 @@ Function SearchFolder( $FolderId )
         if($results.Count -gt 0) 
         {
             Log([string]::Format("Found {0} messages.", $results.Items.Count)) Gray
-            [Void]$service.LoadPropertiesForItems($results,$script:RequiredPropSet)   
+            try {
+                [Void]$service.LoadPropertiesForItems($results,$script:RequiredPropSet)   
+            }
+            catch {}
         }
         
 		if(![string]::IsNullOrEmpty($Recipient))
