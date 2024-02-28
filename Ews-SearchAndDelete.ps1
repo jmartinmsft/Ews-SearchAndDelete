@@ -24,6 +24,7 @@ param (
     [Parameter(Mandatory=$False,HelpMessage="If specified, items will match if the subject contains this string.")] [string]$Subject,
     [Parameter(Mandatory=$False,HelpMessage="Will match only items with the specified sender.")] [string]$Sender,
     [Parameter(Mandatory=$False,HelpMessage="Will match only items with the specified recipient (include Cc and Bcc).")] [string]$Recipient,
+    [Parameter(Mandatory=$False,HelpMessage="Will match only items where the message body contains this string.")] [string]$MessageBody,
     [Parameter(Mandatory=$false,HelpMessage="If this switch is specified, recoverable items will be searched.")] [switch]$SearchDumpster,
     [Parameter(Mandatory=$False,HelpMessage="Only item(s) with this MessageId will be matched.")] [string]$MessageId,
     [Parameter(Mandatory=$False,HelpMessage="Adds the given property(ies) to the list of those that will be retrieved for an item (must be supplied as hash table @{}).  By default, Id, Subject and Sender are retrieved.")] $ViewProperties,
@@ -1242,7 +1243,7 @@ Function SearchMailbox()
             $rootFolderId = [Microsoft.Exchange.WebServices.Data.WellKnownFolderName]::RecoverableItemsRoot
         }
         else {
-            $rootFolderId = [Microsoft.Exchange.WebServices.Data.WellKnownFolderName]::Inbox
+            $rootFolderId = [Microsoft.Exchange.WebServices.Data.WellKnownFolderName]::MsgFolderRoot
         }
     }
     $script:service.HttpHeaders.Add("X-AnchorMailbox",$Mailbox)
@@ -1494,7 +1495,7 @@ Function SearchFolder( $FolderId )
 
     if (IsFolderExcluded($folderPath))
     {
-        LogVerbose "Folder excluded: $folderPath"
+        Log "Folder excluded: $folderPath"
         return
     }
 	Log "Processing folder: $folderPath"
@@ -1533,6 +1534,10 @@ Function SearchFolder( $FolderId )
     if (![String]::IsNullOrEmpty($MessageId))
     {
         $filters += New-Object Microsoft.Exchange.WebServices.Data.SearchFilter+IsEqualTo([Microsoft.Exchange.WebServices.Data.EmailMessageSchema]::InternetMessageId, $MessageId)
+    }
+
+    if(![string]::IsNullOrEmpty($MessageBody)){
+        $filters += New-Object Microsoft.Exchange.WebServices.Data.SearchFilter+ContainsSubstring([Microsoft.Exchange.WebServices.Data.ItemSchema]::Body, $MessageBody)
     }
 
     # Add filter(s) for creation time
