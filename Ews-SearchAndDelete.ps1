@@ -13,56 +13,55 @@
 # OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE ABOVE LIMITATION MAY NOT APPLY TO YOU.
 
 param (
-    [Parameter(Position=0,Mandatory=$True,HelpMessage="Specifies the mailbox to be accessed.")] [ValidateNotNullOrEmpty()] [string]$Mailbox,
-	[Parameter(Mandatory=$False,HelpMessage="If this switch is specified, items will be searched for in the archive mailbox (otherwise, the main mailbox is searched).")] [alias("SearchArchive")] [switch]$Archive,
-    [Parameter(Mandatory=$False,HelpMessage="If this switch is specified, then subfolders of any specified folder will also be searched.")] [switch]$ProcessSubfolders,
-	[Parameter(Mandatory=$False,HelpMessage="Specifies the folder(s) to be searched (if not present, then the Inbox folder will be searched).  Any exclusions override this list.")] $IncludeFolderList,
-    [Parameter(Mandatory=$False,HelpMessage="Specifies the folder(s) to be excluded (these folders will not be searched).")] $ExcludeFolderList,
-    [Parameter(Mandatory=$False,HelpMessage="Specifies the message class of the items being searched.")] [ValidateNotNullOrEmpty()] [string]$MessageClass,
-    [Parameter(Mandatory=$false, HelpMessage="If specified, only messages created before this date will be matched.")] [datetime]$CreatedBefore,
-    [Parameter(Mandatory=$false, HelpMessage="If specified, only messages created after this date will be matched.")] [datetime]$CreatedAfter,
-    [Parameter(Mandatory=$False,HelpMessage="If specified, items will match if the subject contains this string.")] [string]$Subject,
-    [Parameter(Mandatory=$False,HelpMessage="Will match only items with the specified sender.")] [string]$Sender,
-    [Parameter(Mandatory=$False,HelpMessage="Will match only items with the specified recipient (include Cc and Bcc).")] [string]$Recipient,
-    [Parameter(Mandatory=$False,HelpMessage="Will match only items where the message body contains this string.")] [string]$MessageBody,
-    [Parameter(Mandatory=$false,HelpMessage="If this switch is specified, recoverable items will be searched.")] [switch]$SearchDumpster,
-    [Parameter(Mandatory=$False,HelpMessage="Only item(s) with this MessageId will be matched.")] [string]$MessageId,
-    [Parameter(Mandatory=$False,HelpMessage="Adds the given property(ies) to the list of those that will be retrieved for an item (must be supplied as hash table @{}).  By default, Id, Subject and Sender are retrieved.")] $ViewProperties,
-	[Parameter(Mandatory=$False,HelpMessage="If this switch is specified, matching items will be deleted (moved to Deleted Items).")][switch]$DeleteContent,
-	[Parameter(Mandatory=$False,HelpMessage="If this switch is specified, matching items will be hard-deleted (otherwise, they'll be moved to Deleted Items).")][switch]$HardDelete,
+    [Parameter(Position=0,Mandatory=$True,HelpMessage="The Mailbox parameter specifies the mailbox to be accessed.")] [ValidateNotNullOrEmpty()] [string]$Mailbox,
+	[Parameter(Mandatory=$False,HelpMessage="The Archive parameter is a switch to search the archive mailbox (otherwise, the main mailbox is searched).")] [alias("SearchArchive")] [switch]$Archive,
+    [Parameter(Mandatory=$False,HelpMessage="The ProcessSubfolders parameter is a switch to enable searching the subfolders of any specified folder.")] [switch]$ProcessSubfolders,
+	[Parameter(Mandatory=$False,HelpMessage="The IncludeFolderList parameter specifies the folder(s) to be searched (if not present, then the Inbox folder will be searched).  Any exclusions override this list.")] $IncludeFolderList,
+    [Parameter(Mandatory=$False,HelpMessage="The ExcludeFolderList parameter specifies the folder(s) to be excluded (these folders will not be searched).")] $ExcludeFolderList,
+    [Parameter(Mandatory=$False,HelpMessage="The MessageClass parameter specifies the message class of the items being searched.")] [ValidateNotNullOrEmpty()] [string]$MessageClass,
+    [Parameter(Mandatory=$false, HelpMessage="The CreatedBefore parameter specifies only messages created before this date will be searched.")] [datetime]$CreatedBefore,
+    [Parameter(Mandatory=$false, HelpMessage="The CreatedAfter parameter specifies only messages created after this date will be searched.")] [datetime]$CreatedAfter,
+    [Parameter(Mandatory=$False,HelpMessage="The Subject paramter specifies the subject string used by the search.")] [string]$Subject,
+    [Parameter(Mandatory=$False,HelpMessage="The Sender paramter specifies the sender email address used by the search.")] [string]$Sender,
+    [Parameter(Mandatory=$False,HelpMessage="The Recipient paramter specifies the recipient email address used by the search (include Cc and Bcc).")] [string]$Recipient,
+    [Parameter(Mandatory=$False,HelpMessage="The MessageBody parameter specifies the body string used by the search.")] [string]$MessageBody,
+    [Parameter(Mandatory=$false,HelpMessage="The SearchDumpster parameter is a switch to search the recoverable items.")] [switch]$SearchDumpster,
+    [Parameter(Mandatory=$False,HelpMessage="The MessageId parameter specified the MessageId used by the search.")] [string]$MessageId,
+    [Parameter(Mandatory=$False,HelpMessage="The ViewProperties parameter adds the given property(ies) to the list of those that will be retrieved for an item (must be supplied as hash table @{}).  By default, Id, Subject and Sender are retrieved.")] $ViewProperties,
+	[Parameter(Mandatory=$False,HelpMessage="The DeleteContent parameter is a switch to delete the items found in the search results (moved to Deleted Items).")][switch]$DeleteContent,
+	[Parameter(Mandatory=$False,HelpMessage="The HardDelete parameter is a swithch to hard-delete the items found in the search results (otherwise, they'll be moved to Deleted Items).")][switch]$HardDelete,
 	    
 #>** EWS/OAUTH PARAMETERS START **#
-    [Parameter(Mandatory=$False,HelpMessage="Credentials used to authenticate with EWS.")][alias("Credential")] [System.Management.Automation.PSCredential]$Credentials,
-	[Parameter(Mandatory=$False,HelpMessage="If set, then we will use OAuth to access the mailbox (required for Office 365)")] [switch]$OAuth,
-    [Parameter(Mandatory=$False,HelpMessage="The client Id that this script will identify as.  Must be registered in Azure AD.")] [string]$OAuthClientId = "",
-    [Parameter(Mandatory=$False,HelpMessage="The tenant Id (application must be registered in the same tenant being accessed).")] [string]$OAuthTenantId = "",
-    [Parameter(Mandatory=$False,HelpMessage="The redirect Uri of the Azure registered application.")] [string]$OAuthRedirectUri = "http://localhost/code",
-    [Parameter(Mandatory=$False,HelpMessage="If using application permissions, specify the secret key OR certificate.")] [string]$OAuthSecretKey = "",
-    [Parameter(Mandatory=$False,HelpMessage="If using application permissions, specify the secret key OR certificate.  Certificate auth requires MSAL libraries to be available.")] $OAuthCertificate = $null,
-    [Parameter(Mandatory=$False,HelpMessage="If set, OAuth tokens will be stored in global variables for access in other scripts/console.  These global variable will be checked by later scripts using delegate auth to prevent additional log-in prompts.")][switch]$GlobalTokenStorage,
+	#[Parameter(Mandatory=$False,HelpMessage="If set, then we will use OAuth to access the mailbox (required for Office 365)")] [switch]$OAuth,
+    [Parameter(Mandatory=$False,HelpMessage="The OAuthClientId parameter is the Azure Application Id that this script uses to obtain the OAuth token.  Must be registered in Azure AD.")] [string]$OAuthClientId = "",
+    [Parameter(Mandatory=$False,HelpMessage="The OAuthTenantId paramter is the tenant Id where the application is registered (Must be in the same tenant as mailbox being accessed).")] [string]$OAuthTenantId = "",
+    [Parameter(Mandatory=$False,HelpMessage="The OAuthRedirectUri parameter is the redirect Uri of the Azure registered application.")] [string]$OAuthRedirectUri = "http://localhost/code",
+    [Parameter(Mandatory=$False,HelpMessage="The OAuthSecretKey parameter is the the secret for the registered application.")] [string]$OAuthSecretKey = "",
+    [Parameter(Mandatory=$False,HelpMessage="The OAuthCertificate parameter is the certificate for the registerd application. Certificate auth requires MSAL libraries to be available.")] $OAuthCertificate = $null,
+    [Parameter(Mandatory=$False,HelpMessage="The GlobalTokenStorage parameter is a switch when set, OAuth tokens will be stored in global variables for access in other scripts/console.  These global variable will be checked by later scripts using delegate auth to prevent additional log-in prompts.")][switch]$GlobalTokenStorage,
 
-    [Parameter(Mandatory=$False,HelpMessage="For debugging purposes.")][switch]$OAuthDebug,
+    [Parameter(Mandatory=$False,HelpMessage="The OAuthDebug parameter is used For debugging purposes.")][switch]$OAuthDebug,
 
-    [Parameter(Mandatory=$False,HelpMessage="A value greater than 0 enables token debugging (specify total number of token renewals to debug).")]	$DebugTokenRenewal = 0,
+    [Parameter(Mandatory=$False,HelpMessage="The DebugTokenRenewal parameter enables token debugging with a value greater than 0 (specify total number of token renewals to debug).")]	$DebugTokenRenewal = 0,
 
-    [Parameter(Mandatory=$False,HelpMessage="Whether we are using impersonation to access the mailbox.")] [boolean]$Impersonate=$True,
+    [Parameter(Mandatory=$False,HelpMessage="The Impersonate parameter enables impersonation to access the mailbox when set to True.")] [boolean]$Impersonate=$True,
 	
-    [Parameter(Mandatory=$False,HelpMessage="Path to managed API (if omitted, a search of standard paths is performed).")][string]$EWSManagedApiPath = "",
+    [Parameter(Mandatory=$False,HelpMessage="The EWSManagedApiPath parameter specifies the path to managed API (if omitted, a search of standard paths is performed).")][string]$EWSManagedApiPath = "",
 	
-    [Parameter(Mandatory=$False,HelpMessage="Trace file - if specified, EWS tracing information is written to this file.")]	[string]$TraceFile,
+    [Parameter(Mandatory=$False,HelpMessage="The TraceFile parameter specified the Trace file path - if specified, EWS tracing information is written to this file.")]	[string]$TraceFile,
 #>** EWS/OAUTH PARAMETERS END **#
 
 #>** LOGGING PARAMETERS START **#
-    [Parameter(Mandatory=$False,HelpMessage="Log file - activity is logged to this file if specified.")][string]$LogFile = "",
-    [Parameter(Mandatory=$False,HelpMessage="Enable verbose log file.  Verbose logging is written to the log whether -Verbose is enabled or not.")]	[switch]$VerboseLogFile,
-    [Parameter(Mandatory=$False,HelpMessage="Enable debug log file.  Debug logging is written to the log whether -Debug is enabled or not.")][switch]$DebugLogFile,
-    [Parameter(Mandatory=$False,HelpMessage="If selected, an optimised log file creator is used that should be signficantly faster (but may leave file lock applied if script is cancelled).")][switch]$FastFileLogging,
-    [Parameter(Mandatory=$True,HelpMessage="Results file - activity is logged to this file if specified")]	[string]$ResultsFile,
+    [Parameter(Mandatory=$False,HelpMessage="The LogFile parameter specifies the Log file path - activity is logged to this file if specified.")][string]$LogFile = "",
+    [Parameter(Mandatory=$False,HelpMessage="The VerboseLogFile parameter is a switch that enables verbose log file.  Verbose logging is written to the log whether -Verbose is enabled or not.")]	[switch]$VerboseLogFile,
+    [Parameter(Mandatory=$False,HelpMessage="The DebugLogFile parameter is a switch that enables debug log file.  Debug logging is written to the log whether -Debug is enabled or not.")][switch]$DebugLogFile,
+    [Parameter(Mandatory=$False,HelpMessage="The FastFileLogging parameter is a switch that if selected, an optimised log file creator is used that should be signficantly faster (but may leave file lock applied if script is cancelled).")][switch]$FastFileLogging,
+    [Parameter(Mandatory=$True,HelpMessage="The ResultsFile parameter specifies the results file path - items returned by the search results are saved into this file.")]	[string]$ResultsFile,
 #>** LOGGING PARAMETERS END **#
 
-    [Parameter(Mandatory=$False,HelpMessage="Throttling delay (time paused between sending EWS requests) - note that this will be increased automatically if throttling is detected")]	[int]$ThrottlingDelay = 0,
+    [Parameter(Mandatory=$False,HelpMessage="The ThrottlingDelay parameter specifies the throttling delay (time paused between sending EWS requests) - note that this will be increased automatically if throttling is detected")]	[int]$ThrottlingDelay = 0,
 
-    [Parameter(Mandatory=$False,HelpMessage="Batch size (number of items batched into one EWS request) - this will be decreased if throttling is detected")] [int]$BatchSize = 200
+    [Parameter(Mandatory=$False,HelpMessage="The BatchSize parameter specifies the batch size (number of items batched into one EWS request) - this will be decreased if throttling is detected")] [int]$BatchSize = 200
 )
 $script:ScriptVersion = "20240227.1948"
 
@@ -757,8 +756,6 @@ function CreateService($smtpAddress, $impersonatedAddress = "")
     # Create new service
     $exchangeService = New-Object Microsoft.Exchange.WebServices.Data.ExchangeService([Microsoft.Exchange.WebServices.Data.ExchangeVersion]::Exchange2010_SP2)
 
-    # Do we need to use OAuth?
-    $OAuth = $true
     $exchangeService.Credentials = GetOAuthCredentials
     if ($exchangeService.Credentials -eq $null)
         {
@@ -784,7 +781,7 @@ function CreateService($smtpAddress, $impersonatedAddress = "")
     # We enable tracing so that we can retrieve the last response (and read any throttling information from it - this isn't exposed in the EWS Managed API)
     if (![String]::IsNullOrEmpty($EWSManagedApiPath))
     {
-        CreateTraceListener $exchangeService
+        #CreateTraceListener $exchangeService
         if ($script:Tracer)
         {
             $exchangeService.TraceListener = $script:Tracer
@@ -1543,11 +1540,11 @@ Function SearchFolder( $FolderId )
     # Add filter(s) for creation time
     if ( $CreatedAfter )
     {
-        $filters += New-Object Microsoft.Exchange.WebServices.Data.SearchFilter+IsGreaterThan($script:PR_CREATION_TIME, $CreatedAfter)
+        $filters += New-Object Microsoft.Exchange.WebServices.Data.SearchFilter+IsGreaterThanOrEqualTo([Microsoft.Exchange.WebServices.Data.ItemSchema]::DateTimeCreated, $CreatedAfter)
     }
     if ( $CreatedBefore )
     {
-        $filters += New-Object Microsoft.Exchange.WebServices.Data.SearchFilter+IsLessThan($script:PR_CREATION_TIME, $CreatedBefore)
+        $filters += New-Object Microsoft.Exchange.WebServices.Data.SearchFilter+IsLessThanOrEqualTo([Microsoft.Exchange.WebServices.Data.ItemSchema]::DateTimeCreated, $CreatedBefore)
     }
 
     # Create the search filter
