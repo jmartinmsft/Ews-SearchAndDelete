@@ -1101,7 +1101,8 @@ Function ProcessItem( $item )
     }
 
     if ( -not (ItemMatchesRecipientRequirements($item) ) ) { return }
-
+    $itemResult = New-Object PSObject -Property @{ InternetMessageId=$item.InternetMessageId; Sender=$item.Sender;ReceivedBy=$item.ReceivedBy;Id=$item.Id;ItemClass=$item.ItemClass;Subject=$item.Subject;DateTimeCreated=$item.DateTimeCreated};
+    $itemResult | Export-Csv -Path $ResultsFile -NoTypeInformation -Append
     if ($DeleteContent)
 	{
 		LogVerbose "Adding item to delete list: $($item.Subject)"
@@ -1558,7 +1559,7 @@ Function SearchFolder( $FolderId )
         $results = $service.FindItems( $FolderId, $searchFilter, $view )
         $script:RequiredPropSet = New-Object Microsoft.Exchange.WebServices.Data.PropertySet([Microsoft.Exchange.WebServices.Data.BasePropertySet]::IdOnly,[Microsoft.Exchange.WebServices.Data.ItemSchema]::Subject,
         [Microsoft.Exchange.WebServices.Data.EmailMessageSchema]::Sender,[Microsoft.Exchange.WebServices.Data.ItemSchema]::ItemClass,[Microsoft.Exchange.WebServices.Data.EmailMessageSchema]::InternetMessageId,
-        [Microsoft.Exchange.WebServices.Data.EmailMessageSchema]::ReceivedBy)
+        [Microsoft.Exchange.WebServices.Data.EmailMessageSchema]::ReceivedBy,[Microsoft.Exchange.WebServices.Data.ItemSchema]::DateTimeCreated)
         #$script:RequiredPropSet = new-object   Microsoft.Exchange.WebServices.Data.PropertySet([Microsoft.Exchange.WebServices.Data.BasePropertySet]::FirstClassProperties)  
         if($results.Count -gt 0) 
         {
