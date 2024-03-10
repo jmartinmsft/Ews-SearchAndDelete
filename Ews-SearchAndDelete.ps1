@@ -77,6 +77,7 @@ param (
     [switch]$HardDelete,
     
     [ValidateSet("Global", "USGovernmentL4", "USGovernmentL5", "ChinaCloud")]
+    [Parameter(Mandatory = $false)]
     [string]$AzureEnvironment = "Global",
     
     [Parameter(Mandatory = $false)]
