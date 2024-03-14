@@ -982,7 +982,7 @@ Function LoadEWSManagedAPI {
         Import-Module -Name $path -ErrorAction Stop
         return $true
     } catch {
-        Write-Host "Failed to import Microsoft.Exchange.WebServices.dll Inner Exception`n`n$_" -ForegroundColor Red
+        Write-Host "Failed to import Microsoft.Exchange.WebServices.dll Inner Exception`n`n$_" -ForegroundColor -ForegroundColor Red
         exit
     }
 
@@ -1127,7 +1127,7 @@ Function InitPropList() {
                 Write-Verbose "Added property $property to list of those to retrieve"
             }
             else {
-                Log "Failed to parse (or convert) property $property" Red
+                Write-Host "Failed to parse (or convert) property $property" -ForegroundColor Red
             }
         }
     }
@@ -1156,7 +1156,7 @@ Function RemoveProcessedItemsFromList() {
                     # This is a permanent error, so we remove the item from the list
                     [void]$Items.Remove($requestedItems[$i])
                     if (!$suppressErrors) {
-                        Log "Permanent error $($results[$i].ErrorCode) ($($results[$i].MessageText)) reported for item: $($requestedItems[$i].UniqueId)" Red
+                        Log "Permanent error $($results[$i].ErrorCode) ($($results[$i].MessageText)) reported for item: $($requestedItems[$i].UniqueId)" -ForegroundColor Red
                     }
                 }
                 else {
@@ -1173,7 +1173,7 @@ Function RemoveProcessedItemsFromList() {
                         # We got an error 3 times in a row, so we'll admit defeat
                         [void]$Items.Remove($requestedItems[$i])
                         if (!$suppressErrors) {
-                            Log "Permanent error $($results[$i].ErrorCode) ($($results[$i].MessageText)) reported for item: $($requestedItems[$i].UniqueId)" Red
+                            Write-Host "Permanent error $($results[$i].ErrorCode) ($($results[$i].MessageText)) reported for item: $($requestedItems[$i].UniqueId)" -ForegroundColor Red
                         }
                     }
                 }
@@ -1182,7 +1182,7 @@ Function RemoveProcessedItemsFromList() {
         }
     }
     if ( ($failed -gt 0) -and !$suppressErrors ) {
-        Log "$failed items reported error during batch request (if throttled, some failures are expected)" Yellow
+        Write-Host "$failed items reported error during batch request (if throttled, some failures are expected)" Yellow
     }
 }
 
@@ -1252,10 +1252,10 @@ Function ThrottledBatchDelete() {
             if ( -not (Throttled) ) {
                 $consecutiveErrors++
                 try {
-                    Log "Unexpected error: $($Error[0].Exception.InnerException.ToString())" Red
+                    Log "Unexpected error: $($Error[0].Exception.InnerException.ToString())" -ForegroundColor Red
                 }
                 catch {
-                    Log "Unexpected error: $($Error[1])" Red
+                    Write-Host "Unexpected error: $($Error[1])"
                 }
                 $finished = ($consecutiveErrors -gt 9) # If we have 10 errors in a row, we stop processing
             }
@@ -1362,7 +1362,7 @@ Function GetFolder() {
                         catch {
 					        # Failed to create the subfolder
 					        $Folder = $null
-					        Log "Failed to create folder $($PathElements[$i]) in path $FolderPath" Red
+					        Write-Host "Failed to create folder $($PathElements[$i]) in path $FolderPath" -ForegroundColor Red
 					        break
                         }
                         $Folder = $subfolder
@@ -1370,7 +1370,7 @@ Function GetFolder() {
                     else {
 					    # Folder doesn't exist
 					    $Folder = $null
-					    Log "Folder $($PathElements[$i]) doesn't exist in path $FolderPath" Red
+					    Write-Host "Folder $($PathElements[$i]) doesn't exist in path $FolderPath" -ForegroundColor Red
 					    break
                     }
                 }
@@ -1450,9 +1450,9 @@ Function Throttled() {
 
     if ($responseXml.Trace.Envelope.Body.Fault.detail.MessageXml.Value.Name -eq "BackOffMilliseconds") {
         # We are throttled, and the server has told us how long to back off for
-        Log "Throttling detected, server requested back off for $($responseXml.Trace.Envelope.Body.Fault.detail.MessageXml.Value."#text") milliseconds" Yellow
+        Write-Host "Throttling detected, server requested back off for $($responseXml.Trace.Envelope.Body.Fault.detail.MessageXml.Value."#text") milliseconds" Yellow
         Start-Sleep -Milliseconds $responseXml.Trace.Envelope.Body.Fault.detail.MessageXml.Value."#text"
-        Log "Throttling budget should now be reset, resuming operations" Gray
+        Write-Host "Throttling budget should now be reset, resuming operations" Gray
         return $true
     }
     return $false
@@ -1477,7 +1477,7 @@ function ThrottledFolderBind() {
             $folder = [Microsoft.Exchange.WebServices.Data.Folder]::Bind($exchangeService, $folderId, $propSet)
         }
         if (!($folder -eq $null)) {
-            Write-HostLog "Successfully bound to folder $folderId"
+            Write-Verbose "Successfully bound to folder $folderId"
         }
         return $folder
     }
@@ -1492,7 +1492,7 @@ function ThrottledFolderBind() {
                 $folder = [Microsoft.Exchange.WebServices.Data.Folder]::Bind($exchangeService, $folderId, $propSet)
             }
             if (!($folder -eq $null)) {
-                Write-HostLog "Successfully bound to folder $folderId"
+                Write-Verbose "Successfully bound to folder $folderId"
             }
             return $folder
         }
@@ -1681,6 +1681,7 @@ Function SearchFolder( $FolderId ) {
 
     if ($script:ItemsToDelete.Count -gt 0) {
         # Delete the items we found in this folder
+        Write-Host "Attempting to delete the items found within the search results." -ForegroundColor Yellow
         ThrottledBatchDelete $script:ItemsToDelete -SuppressNotFoundErrors $true
     }
 
