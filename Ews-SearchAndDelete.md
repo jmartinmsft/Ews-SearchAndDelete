@@ -8,15 +8,15 @@ An application registration must be created in Azure AD for the tenant and this 
 How To Run
 This syntax will search the Inbox for items from a sender with the email address kelly@contoso.com and generate a CSV file with the results.
 
-.\Ews-SearchAndDelete.ps1 -Mailbox jim@contoso.com -Sender kelly@contoso.com -ResultsFile C:\Temp\jimResults.csv -OAuthClientId 2e542266-a1b2-4567-8901-abcdccd61976 -OAuthTenantId 9101fc97-a2e6-2255-a2d5-83e051e52057 -OAuthSecretKey qau8Q~5L23ScrpM3b2tcd -IncludeFolderList Inbox
+.\Ews-SearchAndDelete.ps1 -Mailbox jim@contoso.com -Sender kelly@contoso.com -ResultsFile C:\Temp\jimResults.csv -OAuthClientId 2e542266-a1b2-4567-8901-abcdccd61976 -OAuthTenantId 9101fc97-a2e6-2255-a2d5-83e051e52057 -OAuthClientSecret qau8Q~5L23ScrpM3b2tcd -IncludeFolderList Inbox
 
 This syntax will search the entire mailbox from items where the subject contains the word Microsoft and the message body contains the word Exchange, generate a CSV file with the results, and delete the items.
 
-.\Ews-SearchAndDelete.ps1 -Mailbox jim@contoso.com -Subject Microsoft -ResultsFile C:\Temp\JimResults.csv -OAuthClientId 2e542266-a1b2-4567-8901-abcdccd61976 -OAuthTenantId 9101fc97-a2e6-2255-a2d5-83e051e52057 -OAuthSecretKey qau8Q~5L23ScrpM3b2tcd -ProcessSubfolders -MessageBody Exchange -DeleteContent
+.\Ews-SearchAndDelete.ps1 -Mailbox jim@contoso.com -Subject Microsoft -ResultsFile C:\Temp\JimResults.csv -OAuthClientId 2e542266-a1b2-4567-8901-abcdccd61976 -OAuthTenantId 9101fc97-a2e6-2255-a2d5-83e051e52057 -OAuthClientSecret qau8Q~5L23ScrpM3b2tcd -ProcessSubfolders -MessageBody Exchange -DeleteContent
 
 This syntax will search the Recoverable Items for items created between 01 Jan 2024 and 31 Jan 2024, generate a CSV file with the results, and hard delete the items.
 
-.\Ews-SearchAndDelete.ps1 -Mailbox jim@contoso.com -Archive -ResultsFile C:\Temp\JimResults.csv -OAuthClientId 2e542266-a1b2-4567-8901-abcdccd61976 -OAuthTenantId 9101fc97-a2e6-2255-a2d5-83e051e52057 -OAuthSecretKey qau8Q~5L23ScrpM3b2tcd -SearchDumpster -HardDelete -CreatedBefore '2024-01-31' -CreatedAfter '2024-01-01'
+.\Ews-SearchAndDelete.ps1 -Mailbox jim@contoso.com -Archive -ResultsFile C:\Temp\JimResults.csv -OAuthClientId 2e542266-a1b2-4567-8901-abcdccd61976 -OAuthTenantId 9101fc97-a2e6-2255-a2d5-83e051e52057 -OAuthClientSecret qau8Q~5L23ScrpM3b2tcd -SearchDumpster -HardDelete -CreatedBefore '2024-01-31' -CreatedAfter '2024-01-01'
 
 
 Parameters
@@ -81,7 +81,7 @@ The OAuthTenantId paramter is the tenant Id where the application is registered 
 OAuthRedirectUri
 The OAuthRedirectUri parameter is the redirect Uri of the Azure registered application.
 
-OAuthSecretKey
+OAuthClientSecret
 The OAuthSecretKey parameter is the the secret for the registered application.
 
 OAuthCertificate
